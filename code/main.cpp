@@ -32,7 +32,7 @@ void Warning(const char* type, const char* name, const char* text);
 unsigned ConvertToUnsigned(char* str, bool invert = false);
 unsigned GetLength(char* str, unsigned limit = 10);
 
-int main()
+int main(void)
 {
     //Init graph
     Graph graph;
@@ -42,17 +42,7 @@ int main()
     //Write data to graph.
     ReadGraph(&graph);
     
-    //Check condiditon.
-    if(graph.IsTree())
-    {
-        //Print result.
-        std::cout << "Graph is tree." << std::endl;
-    }
-    else
-    {
-        //Print result.
-        std::cout << "Graph is not tree." << std::endl;
-    }
+    PhysicGraph ph_graph = PhysicGraph(&graph, Vec2F());
     
     GLFWwindow* window = nullptr;
     
@@ -74,7 +64,7 @@ int main()
         
         if(main_draw->update_frame)
         {
-            main_draw->DrawFrame();
+            main_draw->DrawFrame(void);
             main_draw->DrawObject(graph);
             glfwSwapBuffers(window);
         }
@@ -83,7 +73,7 @@ int main()
             usleep(100);
         }
         
-        glfwPollEvents();
+        glfwPollEvents(void);
         glfwSwapInterval(1);//vertical synchronisation
     }
 }
@@ -124,7 +114,7 @@ void ReadGraph(Graph* graph)
     
     while(true)
     {
-        current = getchar();
+        current = getchar(void);
         switch(current)
         {
         case '0':

@@ -59,14 +59,14 @@ public:
 	void ProcessInput(GLFWwindow* window);
     
     
-    void DrawFrame();
+    void DrawFrame(void);
 
 	//Multydraw functions
 
 	//Get data functions
 
-	bool CanDrawFrame(GLFWwindow* window);
-	float GetScale();
+	bool CanDrawFrame(GLFWwindow* window) const;
+	float GetScale(void) const;
 
 	//Get data functions
 
@@ -74,20 +74,20 @@ public:
 
 	GLFWwindow* CreateWindows(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share, GLFWframebuffersizefun Function);
 
-	void InitBuffers();
-	void InitGlad();
-	void InitOpenGL();
-	void InitShaders();
-	void InitTextures();
+	void InitBuffers(void);
+	void InitGlad(void);
+	void InitOpenGL(void);
+	void InitShaders(void);
+	void InitTextures(void);
     
+    void DrawObject(const Graph graph, bool update_shader = false) const;
+    void DrawObject(const Node* point, bool update_shader = false) const;
+    void DrawObject(const PhysicConnection* connection, bool update_shader = false) const;
+    void DrawObject(const PhysicGraph, bool update_shader = false) const;
+    void DrawObject(Segment segment, bool update_shader = false) const;
+    void DrawObject(const Segment* segment, bool update_shader = false) const;
     
-    void DrawObject(Node* point, bool update_shader = false);
-    void DrawObject(PhysicConnection* connection, bool update_shader = false);
-    void DrawObject(Graph graph, bool update_shader = false);
-    void DrawObject(Segment segment, bool update_shader = false);
-    void DrawObject(Segment* segment, bool update_shader = false);
-    
-    ~OpenGL();
+    ~OpenGL(void);
     
 };
 

@@ -7,6 +7,7 @@
 #define POINT_MAX_TEXT_SIZE     90.0f
 #define POINT_TEXT_SIZE_AUTO    (0.0f / 0.0f)
 
+
 #define CONNECTION_ANGLE_TG     0.03f
 
 #define CONNECTION_DEFAULT_DISTANCE_TO_POINT    0.1f
@@ -17,7 +18,15 @@
 #define CONNECTION_SEGMENT_ID_CENTER    0u
 #define CONNECTION_SEGMENT_ID_START     1u
 #define CONNECTION_SEGMENT_ID_END       2u
-      
+
+
+#define PH_NODE_POINT_RADIUS        0.2f
+
+
+#define PH_GRAPH_CELL_SIZE          1.0f
+#define PH_GRAPH_CELL_SIZE_2        (PH_GRAPH_CELL_SIZE / 2.0f)
+#define PH_GRAPH_PH_TIMES_PARAMETER 0.2f
+    
 
 
 

@@ -20,7 +20,7 @@ protected:
     point_t p2; //second node
     
 public:
-    Connection();
+    Connection(void);
     
     Connection(const Connection& connection);
     
@@ -33,25 +33,25 @@ public:
     void ChangePoint2(point_t value);
     
     //The function returns value of the first node.
-    point_t GetPoint1();
+    point_t GetPoint1(void) const;
     
     //The function returns value of the second node.
-    point_t GetPoint2();
+    point_t GetPoint2(void) const;
     
     //The function returns maximun value of nodes. 
-    point_t GetMaxPoint();
+    point_t GetMaxPoint(void) const;
     
     //The function returns minimal value of nodes.
-    point_t GetMinPoint();
+    point_t GetMinPoint(void) const;
     
     //The function checks the connection for indicated node.
-    bool IsCollectPoint(point_t p);
+    bool IsCollectPoint(point_t p) const;
     
     //The function return new connection this swaped nodes.
-    Connection Swap();
+    Connection Swap(void) const;
     
     //The function swaps nodes in the connection.
-    void SwapThis();
+    void SwapThis(void);
     
     void operator=(Connection connection);
     
@@ -75,18 +75,18 @@ public:
     */
     bool operator>(Connection connection);
     
-    ~Connection();
+    ~Connection(void);
 };
 
 class DirectConnection : public Connection
 {
 public:
-    DirectConnection();
+    DirectConnection(void);
     DirectConnection(const DirectConnection& connection);
     DirectConnection(point_t p1, point_t p2);
     
     void Set(DirectConnection* connection);
-    DirectConnection Swap();
+    DirectConnection Swap(void)  const;
     
     void operator=(DirectConnection connection);
     
@@ -98,7 +98,7 @@ public:
     //The function return oposite value for "operator==".
     bool operator!=(DirectConnection connection);
     
-    ~DirectConnection();
+    ~DirectConnection(void);
 };
 
 std::ostream& operator<<(std::ostream& stream, Connection connection);
@@ -117,12 +117,12 @@ private:
     point_t GetNextConnectionsCount(point_t connection_index);
     
     //The function check loops in the graph considering that the graph is connected.
-    bool IsHaveCycleAsConnected();
+    bool IsHaveCycleAsConnected(void);
 protected:
     point_t connections_count;  //count of edges in the graph
     Connection* connections;    //array of edges of the graph
 public:
-    Graph();
+    Graph(void);
     Graph(const Graph& graph);
     Graph(Connection* connections, point_t connections_count);
     Graph(MatNI matrix);
@@ -133,77 +133,68 @@ public:
     bool Divide(Graph* return_graph);
     
     //The function return count of all adges.
-    point_t GetConnectionsCount();
+    point_t GetConnectionsCount(void) const;
     
     //The function return count of indicated adges.
-    point_t GetConnectionsCount(Connection connection);
+    point_t GetConnectionsCount(Connection connection) const;
     
     //The function return count of indicated adges.
-    point_t GetConnectionsCount(Connection* connection);
+    point_t GetConnectionsCount(Connection* connection) const;
     
     //The function return count of adges that collect indicated node.
-    point_t GetConnectionsCount(point_t p);
+    point_t GetConnectionsCount(point_t p) const;
     
     //The function return maximun value of all nodes.
-    point_t GetMaxPoint();
+    point_t GetMaxPoint(void) const;
     
     //The function return nodes array.
-    point_t* GetPointsArray();
+    point_t* GetPointsArray(void) const;
     
     //The function return nodes count.
-    point_t GetPointsCount();
+    point_t GetPointsCount(void) const;
     
     //The function create a new block of memory and return pointer to it.
     //The function can return nullptr.
     //Don't foget clear this block after use.
-    Connection* GetConnectionsArray();
+    Connection* GetConnectionsArray(void) const;
     
     //The function create a new block of memory and return pointer to it.
     //The function return connections that have indicated point.
     //The function can return nullptr.
     //Don't foget clear this block after use.
-    Connection* GetConnectionsArray(point_t point_number);
+    Connection* GetConnectionsArray(point_t point_number) const;
     
     //The function chec existing point with indicated number in the graph.
-    bool IsCollectPoint(point_t point_number);
+    bool IsCollectPoint(point_t point_number) const;
     
     //Properties
     
     //The function chec that graph is basic.
-    bool IsBasic();
+    bool IsBasic(void) const;
     
     //The function chec that graph is connected.
-    bool IsConnected();
+    bool IsConnected(void) const;
     
     //The function chec that graph has cycle.
-    bool IsHaveCycle();
+    bool IsHaveCycle(void) const;
     
     //The function chec that graph is thee.
-    bool IsTree();
+    bool IsTree(void) const;
     
     //Properties
     
     //The function sorts connections in the praph.
-    void Sort();
-    
-    //only sorted
-    
-    //The function return hight of view representation of the graph.
-    unsigned GetHight();
-    
-    //The function return width of view representation of the graph.
-    unsigned GetWidth();
-    
-    //only sorted
+    void Sort(void);
     
     void operator=(Graph graph);
     
     //All nodes are same.
-    bool operator==(Graph graph);
+    bool operator==(Graph graph) const;
     
-    bool operator!=(Graph graph);
+    //Some nodes are not same.
+    bool operator!=(Graph graph) const;
     
-    ~Graph();
+    ~Graph(void);
 };
 
 std::ostream& operator<<(std::ostream& stream, Graph graph);
@@ -212,7 +203,7 @@ class Node
 {
 public:
     
-    
+    point_t color_id;
     float radius;   //radius of the point
     Vec2F position; //position of the point
     float text_size;//text size inside the point
@@ -227,20 +218,20 @@ public:
         float text_size = POINT_TEXT_SIZE_AUTO);//set text size of the point
     
     //The function returns poiter to string this number of the point.
-    char* GetNumberAsTextC();
+    char* GetNumberAsTextC(void) const;
     
     //The function returns poiter to string (as integer array) this number of the point.
-    int* GetNumberAsTextI();
+    int* GetNumberAsTextI(void) const;
     
     //The function returns count of signs in the value of the point.
-    unsigned GetNumberTextLength();
+    unsigned GetNumberTextLength(void) const;
     
     //The function updates size of text in the point.
-    void Update();
+    void Update(void);
     
     void operator=(Node point);
     
-    ~Node();
+    ~Node(void);
 };
 
 class PhysicConnection
@@ -266,18 +257,68 @@ public:
         float shift_y = CONNECTION_DEFAULT_SHIFT);              //set shift to perpendicular direction
     
     //The function returns segment between start and end points.
-    Segment GetSegment();
+    Segment GetSegment(void) const;
     
     //The function returns indicated segment.
-    Segment GetSegment(ConnectionTypes::segment_id_t segment_id);
+    Segment GetSegment(ConnectionTypes::segment_id_t segment_id) const;
     
     //The function updates positions of points.
-    void Update();
+    void Update(void);
     
     void operator=(PhysicConnection connection);
     
-    ~PhysicConnection();
+    ~PhysicConnection(void);
 };
+
+class PhysicGraph
+{
+protected:
+    point_t nodes_count;
+    point_t connections_count;
+    
+    Node* nodes;
+    PhysicConnection* connections;
+    
+public:
+    //The constructor creates physic graph with out nodes and edges.
+    PhysicGraph(void);
+    
+    //The constructor creates graph from input physic graph.
+    PhysicGraph(const PhysicGraph& ph_graph);
+    
+    //The construtor creates graph from input graph.
+    PhysicGraph(const Graph* connected_graph, Vec2F position);
+    
+    //The function returns indicated physic connection from graph.
+    PhysicConnection GetPhysicConnection(point_t number) const;
+    
+    //The function returns count of physic connections in the physic graph.
+    point_t GetPhysicConnectionsCount(void) const;
+    
+    //The function returns new array of physic connections.
+    PhysicConnections* GetPhysicConnectionsArray(void) const;
+    
+    //The function returns pointer to existing array of physic connection in the physic graph.
+    //If count of physic connections is zero, the funstion returns nullptr.
+    const PhysicConnection* GetPhysicConnectionsArrayPointer(void) const;
+    
+    //The function returns indicated node from graph.
+    Node GetNode(point_t number) const;
+    
+    //The function returns count of nodes in the physic graph.
+    point_t GetNodesCount(void) const;
+    
+    //The function returns new array of nodes.
+    Node* GetNodesArray(void) const;
+    
+    //The function return pointer to existing array of nodes in the physic graph.
+    const Node* GetNodesArrayPointer(void) const;
+        
+    bool operator=(PhysicGraph ph_graph);
+    
+    //The destructor free memory from array of nodes and array of connections.
+    ~PhysicGraph();
+}
 
 
 
