@@ -189,7 +189,7 @@ void OpenGL::InitOpenGL()
 
 void OpenGL::InitShaders()
 {
-    point_shader.Initialisate("Shaders/Objects/Vertex/Point.glsl", "Shaders/Objects/Fragment/Point.glsl");
+    point_shader.Initialisate("Shaders/Objects/Vertex/Node.glsl", "Shaders/Objects/Fragment/Node.glsl");
     segment_shader.Initialisate("Shaders/Objects/Vertex/Segment.glsl", "Shaders/Objects/Fragment/Segment.glsl");
 }
 
@@ -217,6 +217,7 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
 #define CONNECT_RADIUS  (POINT_RADIUS * 1.5f)
 #define CELL_SIZE       1.0f
 #define CEL_SIZE_2      (CELL_SIZE / 2.0f)
+#define TIMES_PARAMETER  0.2f
     
     //position.Set(0.0f, 0.0f);
     
@@ -226,7 +227,7 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
     {
         return;
     }
-    Point* points = new Point[points_count];
+    Node* points = new Node[points_count];
     
     Connection* c_arr = graph.GetConnectionsArray();
     GraphTypes::point_t* p_arr = graph.GetPointsArray();
@@ -240,53 +241,36 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
         sets[p] = false;
     }
     sets[0] = true;
-
-    points[0] = Point(
-        p_arr[0],                                   //point id
-        Vec2F(0.0f, 0.0f) + position * CELL_SIZE,   //point position
-        POINT_RADIUS);                              //point radius
     
     Connection last_con = c_arr[0];
+    unsigned max_times = 0;
     
-    for(GraphTypes::point_t c = 0; c < connections_count; c++)
+    for(unsigned connection = 1, times = 0; connection < connections_count; connection++)
     {
-        if(last_point != c_arr[c].GetPoint1())
+        if(c_arr[connection] == last_con)
         {
-            last_point = c_arr[c].GetPoint1();
-            uy++;
-            ux = 0;
-        }
-        if(last_con != c_arr[c])
-        {
-            last_con = c_arr[c];
-            for(GraphTypes::point_t p = 0; p < points_count; p++)
+            times++;
+            if(max_times < times)
             {
-                if(p_arr[p] == c_arr[c].GetPoint1())
-                {
-                    points[p] = Point(
-                        p_arr[p],
-                        Vec2F((float)ux * CELL_SIZE, -(float)uy * CELL_SIZE) + position * CELL_SIZE,
-                        POINT_RADIUS);
-                    //ux++;
-                    sets[p] = true;
-                }
+                max_times = times;
             }
         }
     }
-    uy++;
-    ux = 0;
-    GraphTypes::point_t cp;
-    for(GraphTypes::point_t p = points_count; p > 0; p--)
+    
+    
+    Vec2F radius_vector = Vec2F((float)points_count * POINT_RADIUS * 2.0f * (1.0f + (float)max_times * TIMES_PARAMETER), 0.0f);
+
+    points[0] = Node(
+        p_arr[0],                                   //point id
+        radius_vector + position * CELL_SIZE,       //point position
+        POINT_RADIUS);                              //point radius
+    
+    for(GraphTypes::point_t point = 0; point < points_count; point++)
     {
-        cp = p - 1;
-        if(!sets[cp])
-        {
-            points[cp] = Point(
-                p_arr[cp],
-                Vec2F((-(float)ux - 1.0f) * CELL_SIZE, -(float)uy * CELL_SIZE) + position * CELL_SIZE,
-                POINT_RADIUS);
-            uy++;
-        }
+        points[point] = Node(
+            p_arr[point],
+            radius_vector.Rotate((float)point / (float)points_count * M_PI * 2.0f),
+            POINT_RADIUS);
     }
     
     PhysicConnection connection = PhysicConnection(&points[0], &points[0], 0.0f, 0.0f);
@@ -323,14 +307,7 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
         }
         else if(c > 0)
         {
-            if(shift == 0)
-            {
-                shift = 2;
-            }
-            else
-            {
-                shift++;
-            }
+            shift++;
         }
         
         dist = points[p1_id].position.GetDistance(points[p2_id].position);
@@ -338,10 +315,10 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
             &points[p1_id],    //first point
             &points[p2_id],    //second point
             (p1_id != p2_id) ? 
-                fminf(dist  / 2.0f, 5.0f / 7.0f) / (float)(shift + 1) * CELL_SIZE : 
+                 dist / 2.0f: 
                 CEL_SIZE_2 + shift * CELL_SIZE,      //shift_x
             (p1_id != p2_id) ? 
-                -((dist - CELL_SIZE - (float)shift) * POINT_RADIUS * 19.0f / 5.0f) * CELL_SIZE : 
+                shift * POINT_RADIUS * TIMES_PARAMETER : 
                 CEL_SIZE_2 + sqrt(shift * CELL_SIZE));   //shift_y
         
         DrawObject(&connection, c == 0);
@@ -363,7 +340,7 @@ void OpenGL::DrawConnectedGraph(Graph graph, Vec2F position)
     delete[] c_arr;
 }
 
-void OpenGL::DrawObject(Point* point, bool update_shader)
+void OpenGL::DrawObject(Node* point, bool update_shader)
 {
     if(update_shader)
     {

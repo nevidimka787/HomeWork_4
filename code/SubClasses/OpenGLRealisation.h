@@ -81,7 +81,7 @@ public:
 	void InitTextures();
     
     
-    void DrawObject(Point* point, bool update_shader = false);
+    void DrawObject(Node* point, bool update_shader = false);
     void DrawObject(PhysicConnection* connection, bool update_shader = false);
     void DrawObject(Graph graph, bool update_shader = false);
     void DrawObject(Segment segment, bool update_shader = false);

@@ -11,7 +11,7 @@ class Connection;       //basic element of a graph
 class DirectConnection; //basic element of direct graph
 class Graph;            //https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 class PhysicConnection; //visual representation of a graph edge
-class Point;            //visual representation of a graph node
+class Node;             //visual representation of a graph node
 
 class Connection
 {
@@ -44,13 +44,13 @@ public:
     //The function returns minimal value of nodes.
     point_t GetMinPoint();
     
-    //The function check the connection for indicated node.
+    //The function checks the connection for indicated node.
     bool IsCollectPoint(point_t p);
     
     //The function return new connection this swaped nodes.
     Connection Swap();
     
-    //The function swap nodes in the connection.
+    //The function swaps nodes in the connection.
     void SwapThis();
     
     void operator=(Connection connection);
@@ -208,17 +208,19 @@ public:
 
 std::ostream& operator<<(std::ostream& stream, Graph graph);
 
-class Point
+class Node
 {
 public:
+    
+    
     float radius;   //radius of the point
     Vec2F position; //position of the point
     float text_size;//text size inside the point
     point_t number; //number of the point
     
-    Point(const Point& point);
+    Node(const Node& point);
     
-    Point(
+    Node(
         point_t number = POINT_DEFAULT_NUMBER,  //set number of the point
         Vec2F position = POINT_DEFAULT_POSITION,//set position of the point
         float radius = POINT_DEFAULT_RADIUS,    //set radius of the point
@@ -236,9 +238,9 @@ public:
     //The function updates size of text in the point.
     void Update();
     
-    void operator=(Point point);
+    void operator=(Node point);
     
-    ~Point();
+    ~Node();
 };
 
 class PhysicConnection
@@ -258,13 +260,16 @@ public:
     PhysicConnection(const PhysicConnection& connection);
     
     PhysicConnection(
-        Point* p1,  //set pointer to first point position
-        Point* p2,  //set pointer to second point position
+        Node* p1,  //set pointer to first point position
+        Node* p2,  //set pointer to second point position
         float shift_x = CONNECTION_DEFAULT_DISTANCE_TO_POINT,   //set shift to normal direction
         float shift_y = CONNECTION_DEFAULT_SHIFT);              //set shift to perpendicular direction
     
+    //The function returns segment between start and end points.
+    Segment GetSegment();
+    
     //The function returns indicated segment.
-    Segment GetSegment(ConnectionTypes::segment_id_t segment_id = CONNECTION_SEGMENT_ID_CENTER);
+    Segment GetSegment(ConnectionTypes::segment_id_t segment_id);
     
     //The function updates positions of points.
     void Update();

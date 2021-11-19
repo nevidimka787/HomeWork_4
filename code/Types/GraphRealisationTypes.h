@@ -9,3 +9,8 @@ namespace GraphTypes
 {
     typedef unsigned point_t;
 }
+
+namespace NodeTypes
+{
+    typedef unsigned color_t;
+}

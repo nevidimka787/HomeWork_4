@@ -936,7 +936,7 @@ std::ostream& operator<<(std::ostream& stream, Graph graph)
 
 
 
-Point::Point(const Point& point) :
+Node::Node(const Node& point) :
     number(point.number),
     position(point.position),
     radius(point.radius),
@@ -944,7 +944,7 @@ Point::Point(const Point& point) :
 {
 }
 
-Point::Point(point_t number, Vec2F position, float radius, float text_size) :
+Node::Node(point_t number, Vec2F position, float radius, float text_size) :
     number(number),
     position(position),
     radius(radius)
@@ -957,7 +957,7 @@ Point::Point(point_t number, Vec2F position, float radius, float text_size) :
     this->text_size = text_size;
 }
 
-int* Point::GetNumberAsTextI()
+int* Node::GetNumberAsTextI()
 {
     int* text;
     if(number == 0)
@@ -980,7 +980,7 @@ int* Point::GetNumberAsTextI()
     return text;
 }
 
-char* Point::GetNumberAsTextC()
+char* Node::GetNumberAsTextC()
 {
     char* text;
     if(number == 0)
@@ -1007,7 +1007,7 @@ char* Point::GetNumberAsTextC()
     text[text_length] = '\0';
 }
 
-unsigned Point::GetNumberTextLength()
+unsigned Node::GetNumberTextLength()
 {
     if(number == 0)
     {
@@ -1021,7 +1021,7 @@ unsigned Point::GetNumberTextLength()
     return l;
 }
 
-void Point::Update()
+void Node::Update()
 {
     if(text_size != text_size)
     {
@@ -1029,7 +1029,7 @@ void Point::Update()
     }
 }
 
-void Point::operator=(Point point)
+void Node::operator=(Node point)
 {
     number = point.number;
     position = point.position;
@@ -1037,7 +1037,7 @@ void Point::operator=(Point point)
     text_size = point.text_size;
 }
 
-Point::~Point()
+Node::~Node()
 {
 }
 
@@ -1053,13 +1053,18 @@ PhysicConnection::PhysicConnection(const PhysicConnection& connection) :
 {
 }
 
-PhysicConnection::PhysicConnection(Point* point_1, Point* point_2, float shift_x, float shift_y) :
+PhysicConnection::PhysicConnection(Node* point_1, Node* point_2, float shift_x, float shift_y) :
     p1_p(&point_1->position),
     p2_p(&point_2->position),
     shift_x(shift_x),
     shift_y(shift_y)
 {    
     Update();
+}
+
+Segment PhysicConnection::GetSegment()
+{
+    return Segment(p1_p, p2_p, true);
 }
 
 Segment PhysicConnection::GetSegment(ConnectionTypes::segment_id_t segment_id)
@@ -1081,7 +1086,7 @@ void PhysicConnection::Update()
     {
         return;
     }
-    if(*p1_p == *p2_p)
+    if(p1_p == p2_p)
     {
         p1 = *p1_p + Vec2F(-shift_y, shift_x).Rotate(CONNECTION_LOOP_ROTATE);
         p2 = *p1_p + Vec2F(shift_y, shift_x).Rotate(CONNECTION_LOOP_ROTATE);
@@ -1089,8 +1094,8 @@ void PhysicConnection::Update()
     }
     Vec2F y_vec = (*p2_p - *p1_p).Normalize().Perpendicular() * shift_y;
     Vec2F x_vec = (*p2_p - *p1_p).Normalize() * shift_x;
-    p1 = *p1_p + x_vec + y_vec * (1.0f + CONNECTION_ANGLE_TG);
-    p2 = *p2_p - x_vec + y_vec / (1.0f + CONNECTION_ANGLE_TG);
+    p1 = *p1_p + x_vec + y_vec;
+    p2 = *p2_p - x_vec + y_vec;
 }
 
 void PhysicConnection::operator=(PhysicConnection connection)
