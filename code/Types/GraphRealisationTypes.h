@@ -8,6 +8,7 @@ namespace ConnectionTypes
 namespace GraphTypes
 {
     typedef unsigned point_t;
+    typedef unsigned color_t;
 }
 
 namespace NodeTypes

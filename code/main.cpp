@@ -1,14 +1,16 @@
 
 #define ERROR   -1
 #define SUCSSES 0
-#define UNSIGNED_ERROR_CODE UINT_MAX
 
 
 #include "NotMy/glad.h"
 #include <GLFW/glfw3.h> //need install OpenGL libraries
 
 #include <iostream>
-#include <unistd.h> 
+#include <limits.h>
+#include <unistd.h>
+
+#define UNSIGNED_ERROR_CODE UINT_MAX
 
 #include "Types/AllTypes.h"
 #include "Constants/AllConstants.h"
@@ -32,17 +34,57 @@ void Warning(const char* type, const char* name, const char* text);
 unsigned ConvertToUnsigned(char* str, bool invert = false);
 unsigned GetLength(char* str, unsigned limit = 10);
 
-int main(void)
+int main()
 {
     //Init graph
     Graph graph;
     
-    std::cout << "Read graph as <node> - <node>" << std::endl;
+    std::cout << "Read graph as <node> - <node>" << std::endl
+    << "Use 0 - <node> or <node> - 0 to set lone point." << std::endl;
     
     //Write data to graph.
     ReadGraph(&graph);
     
-    PhysicGraph ph_graph = PhysicGraph(&graph, Vec2F());
+    Graph div_graph = graph;
+    
+    point_t graphs_count = 0;
+    
+    while(div_graph.Divide(nullptr))
+    {
+        graphs_count++;
+    }
+    
+    PhysicGraph* ph_graphs = new PhysicGraph[graphs_count + 1];
+    graphs_count = 0;
+    Vec2F position = Vec2F();
+    
+    //goto near_while;
+    
+    //Create array of connected graphs from input graph.
+    if(graph.Divide(&div_graph))
+    {
+        div_graph.Paint();
+        ph_graphs[graphs_count] = PhysicGraph(&div_graph, position - Vec2F(PH_NODE_POINT_RADIUS, 0.0f));
+        position.x += ph_graphs[graphs_count].GetRadius();
+        graphs_count++;
+    }
+    while(graph.Divide(&div_graph))
+    {
+        div_graph.Paint();
+        ph_graphs[graphs_count] = PhysicGraph(&div_graph, position);
+        position.x += ph_graphs[graphs_count].GetRadius() + PH_NODE_POINT_RADIUS;
+        ph_graphs[graphs_count] = PhysicGraph(&div_graph, position);
+        position.x += ph_graphs[graphs_count].GetRadius() + PH_NODE_POINT_RADIUS;
+        graphs_count++;
+    }
+    
+    graph.Paint();
+    ph_graphs[graphs_count] = PhysicGraph(&graph, position);
+    position.x += ph_graphs[graphs_count].GetRadius() + PH_NODE_POINT_RADIUS;
+    ph_graphs[graphs_count] = PhysicGraph(&graph, position);
+    graphs_count++;
+    
+    //near_while:
     
     GLFWwindow* window = nullptr;
     
@@ -57,6 +99,18 @@ int main(void)
         &window                         //pointer to window
     );
     
+    
+    //Connection* cs = new Connection[2];
+    //cs[0] = Connection(1, 2, 1, 2);
+    //cs[1] = Connection(3, 2, 8, 2);
+    
+    //graph = Graph(cs, 2);
+    //graph.Paint();
+    
+    //std::cout << graph << std::endl;
+    
+    //PhysicGraph p_g = PhysicGraph(&graph, Vec2F());
+    
     //Draw graph.
     while(!glfwWindowShouldClose(window))
     {
@@ -64,8 +118,12 @@ int main(void)
         
         if(main_draw->update_frame)
         {
-            main_draw->DrawFrame(void);
-            main_draw->DrawObject(graph);
+            main_draw->DrawFrame();
+            for(GraphTypes::point_t graph = 0; graph < graphs_count; graph++)
+            {
+                main_draw->DrawObject(&ph_graphs[graph]);
+            }
+            //main_draw->DrawObject(&p_g);
             glfwSwapBuffers(window);
         }
         else
@@ -73,7 +131,7 @@ int main(void)
             usleep(100);
         }
         
-        glfwPollEvents(void);
+        glfwPollEvents();
         glfwSwapInterval(1);//vertical synchronisation
     }
 }
@@ -114,7 +172,7 @@ void ReadGraph(Graph* graph)
     
     while(true)
     {
-        current = getchar(void);
+        current = getchar();
         switch(current)
         {
         case '0':

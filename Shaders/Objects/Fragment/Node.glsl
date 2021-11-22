@@ -9,6 +9,7 @@ uniform sampler2D symbols_texture;
 uniform int text[32];
 uniform int text_length;
 uniform float text_size;
+uniform int color_id;
 
 #define TEXT_SIZE_100   100.0f
 #define TEXTURE_CELL_SIZE (1.0f / 16.0f)
@@ -19,8 +20,10 @@ uniform float text_size;
 #define FALSE 0
 #define ERROR -1
 
-#define COLOR_WHILE vec3(1.0f)
 #define COLOR_BLACK vec3(0.0f)
+#define COLOR_WHITE vec3(1.0f)
+
+#define BORD_COLOR COLOR_BLACK
 
 #define INSIDE_RADIUS   0.95f
 
@@ -37,6 +40,59 @@ void main()
         discard;
     }
     
+    vec3 bg_color;
+    
+    int new_color_id_r = 
+        ((color_id & (1 <<  0)) >>  0) +
+        ((color_id & (1 <<  3)) >>  2) +
+        ((color_id & (1 <<  6)) >>  4) +
+        ((color_id & (1 <<  9)) >>  6) +
+        ((color_id & (1 << 12)) >>  8) +
+        ((color_id & (1 << 15)) >> 10) +
+        ((color_id & (1 << 18)) >> 12) +
+        ((color_id & (1 << 21)) >> 14) +
+        ((color_id & (1 << 24)) >> 16) +
+        ((color_id & (1 << 27)) >> 18) +
+        ((color_id & (1 << 30)) >> 20);
+        
+    int new_color_id_g = 
+        ((color_id & (1 <<  1)) >>  1) +
+        ((color_id & (1 <<  4)) >>  3) +
+        ((color_id & (1 <<  7)) >>  5) +
+        ((color_id & (1 << 10)) >>  7) +
+        ((color_id & (1 << 13)) >>  0) +
+        ((color_id & (1 << 16)) >> 11) +
+        ((color_id & (1 << 19)) >> 13) +
+        ((color_id & (1 << 22)) >> 15) +
+        ((color_id & (1 << 25)) >> 17) +
+        ((color_id & (1 << 28)) >> 19) +
+        ((color_id & (1 << 31)) >> 21);
+        
+    int new_color_id_b = 
+        ((color_id & (1 <<  2)) >>  2) +
+        ((color_id & (1 <<  5)) >>  4) +
+        ((color_id & (1 <<  8)) >>  6) +
+        ((color_id & (1 << 11)) >>  8) +
+        ((color_id & (1 << 14)) >> 10) +
+        ((color_id & (1 << 17)) >> 12) +
+        ((color_id & (1 << 20)) >> 14) +
+        ((color_id & (1 << 23)) >> 16) +
+        ((color_id & (1 << 26)) >> 18) +
+        ((color_id & (1 << 29)) >> 20);
+        
+    if(color_id == 0)
+    {
+        bg_color = vec3(1.0f);
+    }
+    else
+    {
+        #define POW 4.0f
+        float mult = max(max(pow(float(new_color_id_r), POW), pow(float(new_color_id_g), POW)), pow(float(new_color_id_b), POW));
+        bg_color = vec3(float(new_color_id_r), float(new_color_id_g), float(new_color_id_b));
+        bg_color = 1.0f - bg_color / mult;
+        
+    }
+    
     vec2 frame = TextFrame(text_length, text_size);
     if(abs(pixel_position.x) < frame.x && abs(pixel_position.y) < frame.y)
     {
@@ -51,7 +107,14 @@ void main()
                     TexturePosition(pixel_position, cell, text[s])
                     ).z > 0.9f)
                 {
-                    fragment_color = vec4(COLOR_BLACK, 1.0f);
+                    if(length(bg_color) < 0.5f)
+                    {
+                        fragment_color = vec4(COLOR_WHITE, 1.0f);
+                    }
+                    else
+                    {
+                        fragment_color = vec4(COLOR_BLACK, 1.0f);
+                    }
                     return;
                 }
                 else
@@ -65,11 +128,11 @@ void main()
     
     if(length(pixel_position) < INSIDE_RADIUS)
     {
-        fragment_color = vec4(COLOR_WHILE, 1.0f);
+        fragment_color = vec4(bg_color, 1.0f);
         return;
     }
     
-    fragment_color = vec4(COLOR_BLACK, 1.0f);
+    fragment_color = vec4(BORD_COLOR, 1.0f);
 }
 
 vec2 TextFrame(int _text_length, float _text_size)
