@@ -1099,6 +1099,8 @@ void Graph::Paint()
     point_t points_count = GetPointsCount();
     point_t* p_arr = GetPointsArray();
     
+    bool new_variant = false;
+    
     Point* points_array = (Point*)malloc(sizeof(Point) * points_count);
     for(point_t point = 0; point < points_count; point++)
     {
@@ -1144,17 +1146,30 @@ void Graph::Paint()
                 if(connections[connection].GetPoint1() == points_array[point].number)
                 {
                     connections[connection].ChangeColor1(points_array[point].color);
+                    if(!new_variant && points_array[point].color == colors_count)
+                    {
+                        new_variant = true;
+                    }
                 }
                 if(connections[connection].GetPoint2() == points_array[point].number)
                 {
                     connections[connection].ChangeColor2(points_array[point].color);
+                    if(!new_variant && points_array[point].color == colors_count)
+                    {
+                        new_variant = true;
+                    }
                 }
             }
         }
-        if(CheckPaint())
+        if(new_variant)
         {
-            free(points_array);
-            return;
+            new_variant = false;
+             
+            if(CheckPaint())
+            {
+                free(points_array);
+                return;
+            }
         }
     }
     
